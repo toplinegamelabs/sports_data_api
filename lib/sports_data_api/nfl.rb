@@ -11,6 +11,7 @@ module SportsDataApi
 
     autoload :Team, File.join(DIR, 'team')
     autoload :Teams, File.join(DIR, 'teams')
+    autoload :GameRoster, File.join(DIR, 'game_roster')
     autoload :TeamRoster, File.join(DIR, 'team_roster')
     autoload :Player, File.join(DIR, 'player')
     autoload :TeamSeasonStats, File.join(DIR, 'team_season_stats')
@@ -40,6 +41,14 @@ module SportsDataApi
       response = self.response_json(version, "/teams/#{team}/roster.json")
 
       return TeamRoster.new(response)
+    end
+
+    ##
+    # Fetch NFL game roster
+    def self.game_roster(year, season, week, home, away, version = DEFAULT_VERSION)
+      response = self.response_json(version, "/#{year}/#{season}/#{week}/#{away}/#{home}/roster.json")
+
+      return GameRoster.new(response)
     end
 
     ##
