@@ -20,7 +20,7 @@ describe SportsDataApi::Nhl::Game, vcr: {
     SportsDataApi.set_key(:nhl, api_key(:nhl))
     SportsDataApi::Nhl.daily(2013, 12, 12)
   end
-  let(:play_by_play) do
+  let(:period_stats) do
     SportsDataApi.set_key(:nhl, api_key(:nhl))
     SportsDataApi.set_access_level(:nhl, 't')
     SportsDataApi::Nhl.period_stats('f0f7e327-3a3a-410b-be75-0956c90c4988')
@@ -90,7 +90,7 @@ describe SportsDataApi::Nhl::Game, vcr: {
     end
   end
   context 'results from pbp fetch' do
-    subject { play_by_play }
+    subject { period_stats }
     it { should be_an_instance_of(SportsDataApi::Nhl::Game) }
     its(:id) { should eq 'f0f7e327-3a3a-410b-be75-0956c90c4988' }
   end

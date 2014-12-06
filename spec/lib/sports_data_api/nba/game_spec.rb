@@ -20,6 +20,11 @@ describe SportsDataApi::Nba::Game, vcr: {
     SportsDataApi.set_key(:nba, api_key(:nba))
     SportsDataApi::Nba.daily(2013, 12, 12)
   end
+  let(:quarter_stats) do
+    SportsDataApi.set_key(:nba, api_key(:nba))
+    SportsDataApi.set_access_level(:nba, 't')
+    SportsDataApi::Nba.quarter_stats('e1dcf692-330d-46d3-8add-a241b388fbe2')
+  end
   context 'results from schedule fetch' do
     subject { season.games.first }
     it { should be_an_instance_of(SportsDataApi::Nba::Game) }
@@ -83,5 +88,10 @@ describe SportsDataApi::Nba::Game, vcr: {
     it '#pbp' do
       expect { subject.pbp }.to raise_error(NotImplementedError)
     end
+  end
+  context 'results from pbp fetch' do
+    subject { quarter_stats }
+    it { should be_an_instance_of(SportsDataApi::Nba::Game) }
+    its(:id) { should eq 'e1dcf692-330d-46d3-8add-a241b388fbe2' }
   end
 end
