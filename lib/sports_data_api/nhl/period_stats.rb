@@ -41,13 +41,17 @@ module SportsDataApi
           :powerplay_points => 0,
           :blocked_shots => 0,
           :faceoffs_won => 0,
-          :faceoffs_lost => 0
+          :faceoffs_lost => 0,
+          :saves => 0,
+          :goals_against => 0
         }
       end
 
       def process_shotsaved(stats)
         player = stats.xpath('shot/player').first
+        goalie = stats.xpath('shotagainst/player').first
         add_stat(player['id'], :shots) if player
+        add_stat(goalie['id'], :saves) if goalie
       end
 
       def process_hit(stats)
@@ -74,6 +78,7 @@ module SportsDataApi
       def process_goal(stats)
         strength = stats.xpath('shot').first.attr('strength')
         player = stats.xpath('shot/player').first
+        goalie = stats.xpath('shotagainst/player').first
         if player
           add_stat(player['id'], :shots)
           add_stat(player['id'], :goals)
@@ -83,6 +88,9 @@ module SportsDataApi
             add_stat(player['id'], :powerplay_points)
           end
         end
+
+        add_stat(goalie['id'], :goals_against) if goalie
+
         stats.xpath('assist').each do |assist_stat|
           player = assist_stat.xpath('player').first
           if player
