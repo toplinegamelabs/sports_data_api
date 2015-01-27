@@ -36,9 +36,9 @@ module SportsDataApi
           :giveaways => 0,
           :takeaways => 0,
           :points => 0,
-          :powerplay_goals => 0,
-          :powerplay_assists => 0,
-          :powerplay_points => 0,
+          :pp_goals => 0,
+          :pp_assists => 0,
+          :pp_points => 0,
           :blocked_shots => 0,
           :faceoffs_won => 0,
           :faceoffs_lost => 0,
@@ -84,8 +84,8 @@ module SportsDataApi
           add_stat(player['id'], :goals)
           add_stat(player['id'], :points)
           if strength == 'powerplay'
-            add_stat(player['id'], :powerplay_goals)
-            add_stat(player['id'], :powerplay_points)
+            add_stat(player['id'], :pp_goals)
+            add_stat(player['id'], :pp_points)
           end
         end
 
@@ -97,8 +97,8 @@ module SportsDataApi
             add_stat(player['id'], :assists)
             add_stat(player['id'], :points)
             if strength == 'powerplay'
-              add_stat(player['id'], :powerplay_assists)
-              add_stat(player['id'], :powerplay_points)
+              add_stat(player['id'], :pp_assists)
+              add_stat(player['id'], :pp_points)
             end
           end
         end
