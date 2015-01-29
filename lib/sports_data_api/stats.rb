@@ -9,6 +9,9 @@ module SportsDataApi
         xml.children.each do |child_stat|
           if child_stat.is_a? Nokogiri::XML::Element
             child_stat.attributes.each { |attr_name, attr_value| stat_ivar["#{child_stat.name}_#{attr_name}".to_sym] = attr_value.value }
+            child_stat.element_children.each do |grandchild_stat|
+              grandchild_stat.attributes.each { |attr_name, attr_value| stat_ivar["#{child_stat.name}_#{grandchild_stat.name}_#{attr_name}".to_sym] = attr_value.value }
+            end
           end
         end
       end

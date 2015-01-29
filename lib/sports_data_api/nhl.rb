@@ -18,6 +18,7 @@ module SportsDataApi
     autoload :Venue, File.join(DIR, 'venue')
     autoload :Broadcast, File.join(DIR, 'broadcast')
     autoload :PeriodStats, File.join(DIR, 'period_stats')
+    autoload :PlayerSeasonStats, File.join(DIR, 'player_season_stats')
 
     ##
     # Fetches NHL season schedule for a given year and season
@@ -68,6 +69,14 @@ module SportsDataApi
       response = self.response_xml(version, "/games/#{game}/pbp.xml")
 
       return Game.new(xml: response.xpath("/game"))
+    end
+
+    ##
+    # Fetches NHL season stats for a given team
+    def self.season_stats(year, season, team, version = DEFAULT_VERSION)
+      response = self.response_xml(version, "/seasontd/#{year}/#{season}/teams/#{team}/statistics.xml")
+
+      return PlayerSeasonStats.new(response.xpath("season"))
     end
 
     private

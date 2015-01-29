@@ -22,6 +22,9 @@ module SportsDataApi
               goaltending_ivar = @stats.instance_variable_set("@#{goaltending_xml.name}", {})
               @stats.class.class_eval { attr_reader :"#{goaltending_xml.name}" }
               goaltending_xml.attributes.each { |attr_name, attr_value| goaltending_ivar[attr_name.to_sym] = attr_value.value }
+              goaltending_xml.element_children.each do |child_stat|
+                child_stat.attributes.each { |attr_name, attr_value| goaltending_ivar["#{child_stat.name}_#{attr_name}".to_sym] = attr_value.value }
+              end
             end
           end    
         end
