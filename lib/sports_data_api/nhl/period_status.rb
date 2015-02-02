@@ -26,12 +26,12 @@ module SportsDataApi
         if @started
           # do nothing
         else
-          @started == true if event['clock'] == '20:00'
+          @started = true if event['clock'] == '20:00'
         end
       end
 
       def process_endperiod(event)
-        @ended == true
+        @ended = true
       end
     end
   end
