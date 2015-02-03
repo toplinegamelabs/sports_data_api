@@ -18,6 +18,7 @@ module SportsDataApi
     autoload :Venue, File.join(DIR, 'venue')
     autoload :Broadcast, File.join(DIR, 'broadcast')
     autoload :PeriodStats, File.join(DIR, 'period_stats')
+    autoload :PeriodStatus, File.join(DIR, 'period_status')
     autoload :PlayerSeasonStats, File.join(DIR, 'player_season_stats')
 
     ##
