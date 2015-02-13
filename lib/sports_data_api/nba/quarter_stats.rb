@@ -8,7 +8,7 @@ module SportsDataApi
         @number = xml['number'].to_i
         @player_stats = {}
         xml.xpath('events/event').each do |event|
-          if should_process_event?(event['event_type'])
+          if should_process_event?(event['event_type']) && event.xpath('statistics')
             self.send("process_#{event['event_type']}", event.xpath('statistics').first)
           end
         end
