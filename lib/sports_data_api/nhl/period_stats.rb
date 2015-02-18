@@ -18,7 +18,8 @@ module SportsDataApi
 
       def should_process_event?(event_type)
         ['hit', 'shotsaved', 'giveaway', 'penalty', 'takeaway', 'goal',
-         'faceoff', 'shotmissed'].include?(event_type)
+         'faceoff', 'shotmissed', 'emptynetgoal', 'penaltygoal',
+         'penaltyshotsaved'].include?(event_type)
       end
 
       def add_stat(player_id, stat, amount=1)
@@ -48,6 +49,13 @@ module SportsDataApi
       end
 
       def process_shotsaved(stats)
+        player = stats.xpath('shot/player').first
+        goalie = stats.xpath('shotagainst/player').first
+        add_stat(player['id'], :shots) if player
+        add_stat(goalie['id'], :saves) if goalie
+      end
+
+      def process_penaltyshotsaved(stats)
         player = stats.xpath('shot/player').first
         goalie = stats.xpath('shotagainst/player').first
         add_stat(player['id'], :shots) if player
@@ -90,6 +98,49 @@ module SportsDataApi
         end
 
         add_stat(goalie['id'], :goals_against) if goalie
+
+        stats.xpath('assist').each do |assist_stat|
+          player = assist_stat.xpath('player').first
+          if player
+            add_stat(player['id'], :assists)
+            add_stat(player['id'], :points)
+            if strength == 'powerplay'
+              add_stat(player['id'], :pp_assists)
+              add_stat(player['id'], :pp_points)
+            end
+          end
+        end
+      end
+
+      def process_penaltygoal(stats)
+        strength = stats.xpath('shot').first.attr('strength')
+        player = stats.xpath('shot/player').first
+        goalie = stats.xpath('shotagainst/player').first
+        if player
+          add_stat(player['id'], :shots)
+          add_stat(player['id'], :goals)
+          add_stat(player['id'], :points)
+          if strength == 'powerplay'
+            add_stat(player['id'], :pp_goals)
+            add_stat(player['id'], :pp_points)
+          end
+        end
+
+        add_stat(goalie['id'], :goals_against) if goalie
+      end
+
+      def process_emptynetgoal(stats)
+        strength = stats.xpath('shot').first.attr('strength')
+        player = stats.xpath('shot/player').first
+        if player
+          add_stat(player['id'], :shots)
+          add_stat(player['id'], :goals)
+          add_stat(player['id'], :points)
+          if strength == 'powerplay'
+            add_stat(player['id'], :pp_goals)
+            add_stat(player['id'], :pp_points)
+          end
+        end
 
         stats.xpath('assist').each do |assist_stat|
           player = assist_stat.xpath('player').first
