@@ -72,11 +72,23 @@ module SportsDataApi
       return Players.new(response.xpath("rosters"))
     end
 
+    ##
+    # Fetches pbp
+    def self.play_by_play(event_id)
+      self.response_json(5, "/games/#{event_id}/pbp.json")
+    end
+
     private
     def self.response_xml(version, url)
       base_url = BASE_URL % { access_level: SportsDataApi.access_level(SPORT), version: version }
       response = SportsDataApi.generic_request("#{base_url}#{url}", SPORT)
       Nokogiri::XML(response.to_s).remove_namespaces!
+    end
+
+    def self.response_json(version, url)
+      base_url = BASE_URL % { access_level: SportsDataApi.access_level(SPORT), version: version }
+      response = SportsDataApi.generic_request("#{base_url}#{url}", SPORT)
+      JSON.parse(response.to_s)
     end
   end
 end
