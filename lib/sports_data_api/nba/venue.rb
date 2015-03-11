@@ -2,17 +2,16 @@ module SportsDataApi
   module Nba
     class Venue
       attr_reader :id, :name, :address, :city, :state, :zip, :country, :capacity
-      def initialize(xml)
-        xml = xml.first if xml.is_a? Nokogiri::XML::NodeSet
-        if xml.is_a? Nokogiri::XML::Element
-          @id = xml['id']
-          @name = xml['name']
-          @address = xml['address']
-          @city = xml['city']
-          @state = xml['state']
-          @zip = xml['zip']
-          @country = xml['country']
-          @capacity = xml['capacity']
+      def initialize(venue)
+        if venue
+          @id = venue['id']
+          @name = venue['name']
+          @address = venue['address']
+          @city = venue['city']
+          @state = venue['state']
+          @zip = venue['zip']
+          @country = venue['country']
+          @capacity = venue['capacity']
         end
       end
     end

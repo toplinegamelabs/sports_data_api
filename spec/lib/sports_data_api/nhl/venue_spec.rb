@@ -19,6 +19,6 @@ describe SportsDataApi::Nhl::Venue, vcr: {
     its(:state) { should eq 'PA' }
     its(:zip) { '19148' }
     its(:country) { should eq 'USA' }
-    its(:capacity) { should eq '19537' }
+    its(:capacity) { should eq 19537 }
   end
 end

@@ -7,20 +7,14 @@ module SportsDataApi
 
       ##
       # Initialize by passing the raw XML returned from the API
-      def initialize(xml)
+      def initialize(hierarchy)
         @teams = []
-        xml = xml.first if xml.is_a? Nokogiri::XML::NodeSet
-        if xml.is_a? Nokogiri::XML::Element
-          xml.xpath('conference').each do |conference|
-            # Conference ID, e.g., EASTERN or WESTERN
-            cname = conference['alias']
-
-            conference.xpath('division').each do |division|
-              # Division ID, e.g., ATLANTIC, PACIFIC
-              dname = division['alias']
-
-              # Create a new team
-              @teams << division.xpath('team').map { |team| Team.new(team, cname, dname) }
+        hierarchy['conferences'].each do |conference|
+          cname = conference['alias']
+          conference['divisions'].each do |division|
+            dname = division['alias']
+            division['teams'].each do |team|
+              @teams << Team.new(team, cname, dname)
             end
           end
         end

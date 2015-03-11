@@ -5,16 +5,13 @@ module SportsDataApi
       attr_reader :started
       attr_reader :ended
 
-      def initialize(xml)
-        @number = xml['number'].to_i
+      def initialize(pbp)
+        @number = pbp['number'].to_i
         @started = false
         @ended = false
-        events = xml.xpath('events/event')
-        @started = events.count > 0
-        events.each do |event|
-          if event['event_type'] == 'endperiod'
-            @ended = true
-          end
+        if pbp['events']
+          @started = pbp['events'].count > 0
+          @ended = pbp['events'].select{|event| event['event_type'] == 'endperiod'}.count > 0
         end
       end
     end

@@ -4,12 +4,16 @@ module SportsDataApi
       attr_reader :number
       attr_reader :player_stats
 
-      def initialize(xml)
-        @number = xml['number'].to_i
+      def initialize(pbp)
+        @number = pbp['number'].to_i
         @player_stats = {}
-        xml.xpath('events/event').each do |event|
-          if should_process_event?(event['event_type']) && event.xpath('statistics')
-            self.send("process_#{event['event_type']}", event.xpath('statistics').first)
+        if pbp['events']
+          pbp['events'].each do |event|
+            if should_process_event?(event['event_type']) && event['statistics']
+              event['statistics'].each do |stat|
+                self.send("process_#{stat['type']}", stat) if stat['player']
+              end
+            end
           end
         end
       end
@@ -41,56 +45,46 @@ module SportsDataApi
         }
       end
 
-      def process_twopointmade(stats)
-        player = stats.xpath('fieldgoal/player').first
-        if player
-          add_stat(player['id'], :field_goals_made)
-          add_stat(player['id'], :two_points_made)
-          add_stat(player['id'], :points, 2)
-        end
-        player = stats.xpath('assist/player').first
-        add_stat(player['id'], :assists) if player
-      end
-
-      def process_threepointmade(stats)
-        player = stats.xpath('fieldgoal/player').first
-        if player
-          add_stat(player['id'], :field_goals_made)
-          add_stat(player['id'], :three_points_made)
-          add_stat(player['id'], :points, 3)
-        end
-        player = stats.xpath('assist/player').first
-        add_stat(player['id'], :assists) if player
-      end
-
-      def process_freethrowmade(stats)
-        player = stats.xpath('freethrow/player').first
-        if player
-          add_stat(player['id'], :free_throws_made)
-          add_stat(player['id'], :points)
+      def process_fieldgoal(stats)
+        if stats['made']
+          add_stat(stats['player']['id'], :field_goals_made)
+          if stats['three_point_shot']
+            add_stat(stats['player']['id'], :three_points_made)
+            add_stat(stats['player']['id'], :points, 3)
+          else
+            add_stat(stats['player']['id'], :points, 2)
+          end
         end
       end
 
       def process_rebound(stats)
-        player = stats.xpath('rebound/player').first
-        add_stat(player['id'], :rebounds) if player
+        add_stat(stats['player']['id'], :rebounds)
+      end
+
+      def process_assist(stats)
+        add_stat(stats['player']['id'], :assists)
+      end
+
+      def process_block(stats)
+        add_stat(stats['player']['id'], :blocks)
+      end
+
+      def process_attemptblocked(stats)
+      end
+
+      def process_freethrow(stats)
+        if stats['made']
+          add_stat(stats['player']['id'], :free_throws_made)
+          add_stat(stats['player']['id'], :points)
+        end
       end
 
       def process_turnover(stats)
-        player = stats.xpath('turnover/player').first
-        add_stat(player['id'], :turnovers) if player
-        player = stats.xpath('steal/player').first
-        add_stat(player['id'], :steals) if player
+        add_stat(stats['player']['id'], :turnovers)
       end
 
-      def process_twopointmiss(stats)
-        player = stats.xpath('block/player').first
-        add_stat(player['id'], :blocks) if player
-      end
-
-      def process_threepointmiss(stats)
-        player = stats.xpath('block/player').first
-        add_stat(player['id'], :blocks) if player
+      def process_steal(stats)
+        add_stat(stats['player']['id'], :steals)
       end
     end
   end

@@ -4,12 +4,16 @@ module SportsDataApi
       attr_reader :number
       attr_reader :player_stats
 
-      def initialize(xml)
-        @number = xml['number'].to_i
+      def initialize(pbp)
+        @number = pbp['number'].to_i
         @player_stats = {}
-        xml.xpath('events/event').each do |event|
-          if should_process_event?(event['event_type']) && event.xpath('statistics')
-            self.send("process_#{event['event_type']}", event.xpath('statistics').first)
+        if pbp['events']
+          pbp['events'].each do |event|
+            if should_process_event?(event['event_type']) && event['statistics']
+              event['statistics'].each do |stat|
+                self.send("process_#{stat['type']}", stat) if stat['player']
+              end
+            end
           end
         end
       end
@@ -17,9 +21,8 @@ module SportsDataApi
       private
 
       def should_process_event?(event_type)
-        ['hit', 'shotsaved', 'giveaway', 'penalty', 'takeaway', 'goal',
-         'faceoff', 'shotmissed', 'emptynetgoal', 'penaltygoal',
-         'penaltyshotsaved'].include?(event_type)
+        ['hit', 'shotsaved', 'penalty', 'goal', 'faceoff', 'shotmissed',
+          'emptynetgoal', 'penaltygoal', 'penaltyshotsaved'].include?(event_type)
       end
 
       def add_stat(player_id, stat, amount=1)
@@ -34,8 +37,6 @@ module SportsDataApi
           :penalty_minutes => 0,
           :shots => 0,
           :hits => 0,
-          :giveaways => 0,
-          :takeaways => 0,
           :points => 0,
           :pp_goals => 0,
           :pp_assists => 0,
@@ -48,130 +49,56 @@ module SportsDataApi
         }
       end
 
-      def process_shotsaved(stats)
-        player = stats.xpath('shot/player').first
-        goalie = stats.xpath('shotagainst/player').first
-        add_stat(player['id'], :shots) if player
-        add_stat(goalie['id'], :saves) if goalie
-      end
-
-      def process_penaltyshotsaved(stats)
-        player = stats.xpath('shot/player').first
-        goalie = stats.xpath('shotagainst/player').first
-        add_stat(player['id'], :shots) if player
-        add_stat(goalie['id'], :saves) if goalie
-      end
-
-      def process_hit(stats)
-        player = stats.xpath('hit/player').first
-        add_stat(player['id'], :hits) if player
-      end
-
-      def process_giveaway(stats)
-        player = stats.xpath('giveaway/player').first
-        add_stat(player['id'], :giveaways) if player
-      end
-
-      def process_penalty(stats)
-        minutes = stats.xpath('penalty').first.attr('minutes').to_i
-        player = stats.xpath('penalty/player').first
-        add_stat(player['id'], :penalty_minutes, minutes) if player
-      end
-
-      def process_takeaway(stats)
-        player = stats.xpath('takeaway/player').first
-        add_stat(player['id'], :takeaways) if player
-      end
-
-      def process_goal(stats)
-        strength = stats.xpath('shot').first.attr('strength')
-        player = stats.xpath('shot/player').first
-        goalie = stats.xpath('shotagainst/player').first
-        if player
-          add_stat(player['id'], :shots)
-          add_stat(player['id'], :goals)
-          add_stat(player['id'], :points)
-          if strength == 'powerplay'
-            add_stat(player['id'], :pp_goals)
-            add_stat(player['id'], :pp_points)
-          end
-        end
-
-        add_stat(goalie['id'], :goals_against) if goalie
-
-        stats.xpath('assist').each do |assist_stat|
-          player = assist_stat.xpath('player').first
-          if player
-            add_stat(player['id'], :assists)
-            add_stat(player['id'], :points)
-            if strength == 'powerplay'
-              add_stat(player['id'], :pp_assists)
-              add_stat(player['id'], :pp_points)
-            end
-          end
-        end
-      end
-
-      def process_penaltygoal(stats)
-        strength = stats.xpath('shot').first.attr('strength')
-        player = stats.xpath('shot/player').first
-        goalie = stats.xpath('shotagainst/player').first
-        if player
-          add_stat(player['id'], :shots)
-          add_stat(player['id'], :goals)
-          add_stat(player['id'], :points)
-          if strength == 'powerplay'
-            add_stat(player['id'], :pp_goals)
-            add_stat(player['id'], :pp_points)
-          end
-        end
-
-        add_stat(goalie['id'], :goals_against) if goalie
-      end
-
-      def process_emptynetgoal(stats)
-        strength = stats.xpath('shot').first.attr('strength')
-        player = stats.xpath('shot/player').first
-        if player
-          add_stat(player['id'], :shots)
-          add_stat(player['id'], :goals)
-          add_stat(player['id'], :points)
-          if strength == 'powerplay'
-            add_stat(player['id'], :pp_goals)
-            add_stat(player['id'], :pp_points)
-          end
-        end
-
-        stats.xpath('assist').each do |assist_stat|
-          player = assist_stat.xpath('player').first
-          if player
-            add_stat(player['id'], :assists)
-            add_stat(player['id'], :points)
-            if strength == 'powerplay'
-              add_stat(player['id'], :pp_assists)
-              add_stat(player['id'], :pp_points)
-            end
-          end
-        end
-      end
-
       def process_faceoff(stats)
-        stats.xpath('faceoff').each do |faceoff_stat|
-          player = faceoff_stat.xpath('player').first
-          if player && faceoff_stat.attr('win') == 'true'
-            add_stat(player['id'], :faceoffs_won)
-          elsif player && faceoff_stat.attr('win') == 'false'
-            add_stat(player['id'], :faceoffs_lost)
-          end
+        if stats['win']
+          add_stat(stats['player']['id'], :faceoffs_won)
+        else
+          add_stat(stats['player']['id'], :faceoffs_lost)
         end
       end
 
       def process_shotmissed(stats)
-        blocked_shot = stats.xpath('block').first
-        if blocked_shot
-          player = blocked_shot.xpath('player').first
-          add_stat(player['id'], :blocked_shots) if player
+      end
+
+      def process_shot(stats)
+        add_stat(stats['player']['id'], :shots)
+        if stats['goal']
+          add_stat(stats['player']['id'], :goals)
+          add_stat(stats['player']['id'], :points)
+          if stats['strength'] == 'powerplay'
+            add_stat(stats['player']['id'], :pp_goals)
+            add_stat(stats['player']['id'], :pp_points)
+          end
         end
+      end
+
+      def process_shotagainst(stats)
+        add_stat(stats['player']['id'], :saves) if stats['saved']
+        add_stat(stats['player']['id'], :goals_against) if stats['goal']
+      end
+
+      def process_assist(stats)
+        add_stat(stats['player']['id'], :assists)
+        add_stat(stats['player']['id'], :points)
+        if stats['strength'] == 'powerplay'
+          add_stat(stats['player']['id'], :pp_assists)
+          add_stat(stats['player']['id'], :pp_points)
+        end
+      end
+
+      def process_hit(stats)
+        add_stat(stats['player']['id'], :hits)
+      end
+
+      def process_block(stats)
+        add_stat(stats['player']['id'], :blocked_shots)
+      end
+
+      def process_attemptblocked(stats)
+      end
+
+      def process_penalty(stats)
+        add_stat(stats['player']['id'], :penalty_minutes, stats['minutes'])
       end
     end
   end

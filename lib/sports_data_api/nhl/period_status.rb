@@ -5,33 +5,14 @@ module SportsDataApi
       attr_reader :started
       attr_reader :ended
 
-      def initialize(xml)
-        @number = xml['number'].to_i
+      def initialize(pbp)
+        @number = pbp['number'].to_i
         @started = false
         @ended = false
-        xml.xpath('events/event').each do |event|
-          if should_process_event?(event['event_type'])
-            self.send("process_#{event['event_type']}", event)
-          end
+        if pbp['events']
+          @started = pbp['events'].select{|event| event['event_type'] == 'faceoff'}.count > 0
+          @ended = pbp['events'].select{|event| event['event_type'] == 'endperiod'}.count > 0
         end
-      end
-
-      private
-
-      def should_process_event?(event_type)
-        ['faceoff', 'endperiod'].include?(event_type)
-      end
-
-      def process_faceoff(event)
-        if @started
-          # do nothing
-        else
-          @started = true if event['clock'] == '20:00'
-        end
-      end
-
-      def process_endperiod(event)
-        @ended = true
       end
     end
   end

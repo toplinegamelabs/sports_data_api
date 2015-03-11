@@ -3,30 +3,31 @@ module SportsDataApi
     class Player
       attr_reader :stats
 
-      def initialize(xml)
-        if xml.is_a? Nokogiri::XML::Element
-          player_ivar = self.instance_variable_set("@#{xml.name}", {})
-          self.class.class_eval { attr_reader :"#{xml.name}" }
-          xml.attributes.each do |attr_name, attr_value|
-            player_ivar[attr_name.to_sym] = attr_value.value
-          end
+      def initialize(player)
+        if player
+          player_ivar = self.instance_variable_set("@player", {})
+          self.class.class_eval { attr_reader :"player" }
+          @stats = SportsDataApi::Stats.new(player.delete('statistics'))
 
-          stats_xml = xml.xpath('statistics')
-          if stats_xml.is_a? Nokogiri::XML::NodeSet and stats_xml.count > 0
-            @stats = SportsDataApi::Stats.new(stats_xml.first)
-          end
-
-          if @stats
-            goaltending_xml = xml.xpath('goaltending').first
-            if goaltending_xml.is_a? Nokogiri::XML::Element
-              goaltending_ivar = @stats.instance_variable_set("@#{goaltending_xml.name}", {})
-              @stats.class.class_eval { attr_reader :"#{goaltending_xml.name}" }
-              goaltending_xml.attributes.each { |attr_name, attr_value| goaltending_ivar[attr_name.to_sym] = attr_value.value }
-              goaltending_xml.element_children.each do |child_stat|
-                child_stat.attributes.each { |attr_name, attr_value| goaltending_ivar["#{child_stat.name}_#{attr_name}".to_sym] = attr_value.value }
+          goalie_stats = player.delete('goaltending')
+          if goalie_stats
+            goalie_stats.delete('periods')
+            goaltending_ivar = @stats.instance_variable_set("@goaltending", {})
+            @stats.class.class_eval { attr_reader :"goaltending" }
+            goalie_stats.each_pair do |parent_k, parent_v|
+              if parent_v.is_a? Hash
+                parent_v.each_pair do |child_k, child_v|
+                  goaltending_ivar["#{parent_k}_#{child_k}".to_sym] = child_v
+                end
+              else
+                goaltending_ivar[parent_k.to_sym] = parent_v
               end
             end
-          end    
+          end
+
+          player.each_pair do |k,v|
+            player_ivar[k.to_sym] = v
+          end
         end
       end
     end

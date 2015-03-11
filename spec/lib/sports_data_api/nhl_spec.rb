@@ -24,16 +24,16 @@ describe SportsDataApi::Nhl, vcr: {
   end
 
   context 'create valid URLs' do
-    let(:schedule_url) { 'http://api.sportsdatallc.org/nhl-t3/games/2013/REG/schedule.xml' }
+    let(:schedule_url) { 'http://api.sportsdatallc.org/nhl-t3/games/2013/REG/schedule.json' }
     before(:each) do
       SportsDataApi.set_key(:nhl, 'invalid_key')
       SportsDataApi.set_access_level(:nhl, 't')
-      @schedule_xml = RestClient.get("#{schedule_url}?api_key=#{api_key(:nhl)}")
+      @schedule_json = RestClient.get("#{schedule_url}?api_key=#{api_key(:nhl)}")
     end
     describe '.schedule' do
       it 'creates a valid Sports Data LLC url' do
         params = { params: { api_key: SportsDataApi.key(:nhl) } }
-        RestClient.should_receive(:get).with(schedule_url, params).and_return(@schedule_xml)
+        RestClient.should_receive(:get).with(schedule_url, params).and_return(@schedule_json)
         subject.schedule(2013, :REG)
       end
     end

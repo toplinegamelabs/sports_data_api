@@ -19,6 +19,6 @@ describe SportsDataApi::Nba::Venue, vcr: {
     its(:state) { should eq 'NY' }
     its(:zip) { '11217' }
     its(:country) { should eq 'USA' }
-    its(:capacity) { should eq '18200' }
+    its(:capacity) { should eq 18200 }
   end
 end

@@ -91,6 +91,9 @@ describe SportsDataApi::Nhl::Game, vcr: {
   end
   context 'results from pbp fetch' do
     subject { period_stats }
+    it "does something" do
+      expect(period_stats).to be_a SportsDataApi::Nhl::Game
+    end
     it { should be_an_instance_of(SportsDataApi::Nhl::Game) }
     its(:id) { should eq 'f0f7e327-3a3a-410b-be75-0956c90c4988' }
   end

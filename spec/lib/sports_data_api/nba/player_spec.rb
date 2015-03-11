@@ -14,7 +14,7 @@ describe SportsDataApi::Nba::Player, vcr: {
   describe 'player' do
     subject { player }
     it 'should have an id' do
-      expect(subject[:id]).to eql '17973022-bb81-427f-905e-86d3d3d9b51f'
+      expect(subject[:id]).to eql '05dea31d-f1ff-491b-9f17-8be88b26f413'
     end
     
     it 'should have a status' do
@@ -22,39 +22,39 @@ describe SportsDataApi::Nba::Player, vcr: {
     end
 
     it 'should have a full_name' do
-      expect(subject[:full_name]).to eql 'Festus Ezeli'
+      expect(subject[:full_name]).to eql 'Justin Holiday'
     end
 
     it 'should have a first_name' do
-      expect(subject[:first_name]).to eql 'Festus'
+      expect(subject[:first_name]).to eql 'Justin'
     end
 
     it 'should have a last_name' do
-      expect(subject[:last_name]).to eql 'Ezeli'
+      expect(subject[:last_name]).to eql 'Holiday'
     end
 
     it 'should have an abbr_name' do
-      expect(subject[:abbr_name]).to eql 'F.Ezeli'
+      expect(subject[:abbr_name]).to eql 'J.Holiday'
     end
 
     it 'should have a height' do
-      expect(subject[:height]).to eql '83'
+      expect(subject[:height]).to eql 78
     end
 
     it 'should have a weight' do
-      expect(subject[:weight]).to eql '255'
+      expect(subject[:weight]).to eql 185
     end
 
     it 'should have a position' do
-      expect(subject[:position]).to eql 'C'
+      expect(subject[:position]).to eql 'G-F'
     end
 
     it 'should have a primary_position' do
-      expect(subject[:primary_position]).to eql 'C'
+      expect(subject[:primary_position]).to eql 'SG'
     end
 
     it 'should have a jersey_number' do
-      expect(subject[:jersey_number]).to eql '31'
+      expect(subject[:jersey_number]).to eql '7'
     end
 
     it 'should have an experience' do
@@ -62,11 +62,11 @@ describe SportsDataApi::Nba::Player, vcr: {
     end
 
     it 'should have a college' do
-      expect(subject[:college]).to eql 'Vanderbilt'
+      expect(subject[:college]).to eql 'Washington'
     end
 
     it 'should have a birth_place' do
-      expect(subject[:birth_place]).to eql 'Benin City,, NGA'
+      expect(subject[:birth_place]).to eql 'Mission Hills, CA, USA'
     end
   end
 end

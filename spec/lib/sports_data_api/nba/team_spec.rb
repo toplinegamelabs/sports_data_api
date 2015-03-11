@@ -89,10 +89,10 @@ describe SportsDataApi::Nba::Team, vcr: {
         expect(subject.player[:jersey_number]).to eq "5"
       end
       it 'should have a played' do
-        expect(subject.player[:played]).to eq "true"
+        expect(subject.player[:played]).to eq true
       end
       it 'should have an active' do
-        expect(subject.player[:active]).to eq "true"
+        expect(subject.player[:active]).to eq true
       end
       its(:stats){ should be_an_instance_of(SportsDataApi::Stats) }
 
@@ -102,82 +102,82 @@ describe SportsDataApi::Nba::Team, vcr: {
           expect(subject[:minutes]).to eql '19:45'
         end
         it 'should have field_goals_made' do
-          expect(subject[:field_goals_made]).to eql '2'
+          expect(subject[:field_goals_made]).to eql 2
         end
         it 'should have field_goals_made' do
-          expect(subject[:field_goals_att]).to eql '10'
+          expect(subject[:field_goals_att]).to eql 10
         end
         it 'should have field_goals_pct' do
-          expect(subject[:field_goals_pct]).to eql '20.0'
+          expect(subject[:field_goals_pct]).to eql 20.0
         end
         it 'should have two_points_made' do
-          expect(subject[:two_points_made]).to eql '1'
+          expect(subject[:two_points_made]).to eql 1
         end
         it 'should have two_points_att' do
-          expect(subject[:two_points_att]).to eql '8'
+          expect(subject[:two_points_att]).to eql 8
         end
         it 'should have two_points_pct' do
-          expect(subject[:two_points_pct]).to eql '0.125'
+          expect(subject[:two_points_pct]).to eql 0.125
         end
         it 'should have three_points_made' do
-          expect(subject[:three_points_made]).to eql '1'
+          expect(subject[:three_points_made]).to eql 1
         end
         it 'should have three_points_att' do
-          expect(subject[:three_points_att]).to eql '2'
+          expect(subject[:three_points_att]).to eql 2
         end
         it 'should have three_points_pct' do
-          expect(subject[:three_points_pct]).to eql '50.0'
+          expect(subject[:three_points_pct]).to eql 50.0
         end
         it 'should have blocked_att' do
-          expect(subject[:blocked_att]).to eql '2'
+          expect(subject[:blocked_att]).to eql 2
         end
         it 'should have free_throws_made' do
-          expect(subject[:free_throws_made]).to eql '2'
+          expect(subject[:free_throws_made]).to eql 2
         end
         it 'should have free_throws_att' do
-          expect(subject[:free_throws_att]).to eql '2'
+          expect(subject[:free_throws_att]).to eql 2
         end
         it 'should have free_throws_pct' do
-          expect(subject[:free_throws_pct]).to eql '100.0'
+          expect(subject[:free_throws_pct]).to eql 100.0
         end
         it 'should have offensive_rebounds' do
-          expect(subject[:offensive_rebounds]).to eql '1'
+          expect(subject[:offensive_rebounds]).to eql 1
         end
         it 'should have defensive_rebounds' do
-          expect(subject[:defensive_rebounds]).to eql '7'
+          expect(subject[:defensive_rebounds]).to eql 7
         end
         it 'should have rebounds' do
-          expect(subject[:rebounds]).to eql '8'
+          expect(subject[:rebounds]).to eql 8
         end
         it 'should have assists' do
-          expect(subject[:assists]).to eql '3'
+          expect(subject[:assists]).to eql 3
         end
         it 'should have turnovers' do
-          expect(subject[:turnovers]).to eql '0'
+          expect(subject[:turnovers]).to eql 0
         end
         it 'should have steals' do
-          expect(subject[:steals]).to eql '1'
+          expect(subject[:steals]).to eql 1
         end
         it 'should have blocks' do
-          expect(subject[:blocks]).to eql '0'
+          expect(subject[:blocks]).to eql 0
         end
         it 'should have assists_turnover_ratio' do
-          expect(subject[:assists_turnover_ratio]).to eql '0'
+          expect(subject[:assists_turnover_ratio]).to eql 0
         end
         it 'should have personal_fouls' do
-          expect(subject[:personal_fouls]).to eql '2'
+          expect(subject[:personal_fouls]).to eql 2
         end
         it 'should have tech_fouls' do
-          expect(subject[:tech_fouls]).to eql '0'
+          expect(subject[:tech_fouls]).to eql 0
         end
         it 'should have flagrant_fouls' do
-          expect(subject[:flagrant_fouls]).to eql '0'
+          expect(subject[:flagrant_fouls]).to eql 0
         end
         it 'should have pls_min' do
-          expect(subject[:pls_min]).to eql '3'
+          expect(subject[:pls_min]).to eql 3
         end
         it 'should have points' do
-          expect(subject[:points]).to eql '7'
+          expect(subject[:points]).to eql 7
         end
       end
     end

@@ -1,17 +1,22 @@
 module SportsDataApi
   class Stats
-    def initialize(xml)
-      if xml.is_a? Nokogiri::XML::Element
-        stat_ivar = self.instance_variable_set("@#{xml.name}", {})
-        self.class.class_eval { attr_reader :"#{xml.name}" }
-        
-        xml.attributes.each { |attr_name, attr_value| stat_ivar[attr_name.to_sym] = attr_value.value }
-        xml.children.each do |child_stat|
-          if child_stat.is_a? Nokogiri::XML::Element
-            child_stat.attributes.each { |attr_name, attr_value| stat_ivar["#{child_stat.name}_#{attr_name}".to_sym] = attr_value.value }
-            child_stat.element_children.each do |grandchild_stat|
-              grandchild_stat.attributes.each { |attr_name, attr_value| stat_ivar["#{child_stat.name}_#{grandchild_stat.name}_#{attr_name}".to_sym] = attr_value.value }
+    def initialize(stats)
+      if stats
+        stats_ivar = self.instance_variable_set("@statistics", {})
+        self.class.class_eval { attr_reader :"statistics" }
+        stats.each_pair do |parent_k, parent_v|
+          if parent_v.is_a? Hash
+            parent_v.each_pair do |child_k, child_v|
+              if child_v.is_a? Hash
+                child_v.each_pair do |grandchild_k, grandchild_v|
+                  stats_ivar["#{parent_k}_#{child_k}_#{grandchild_k}".to_sym] = grandchild_v
+                end
+              else
+                stats_ivar["#{parent_k}_#{child_k}".to_sym] = child_v
+              end
             end
+          else
+            stats_ivar[parent_k.to_sym] = parent_v
           end
         end
       end

@@ -2,11 +2,10 @@ module SportsDataApi
   module Nhl
     class Broadcast
       attr_reader :network, :satellite
-      def initialize(xml)
-        xml = xml.first if xml.is_a? Nokogiri::XML::NodeSet
-        if xml.is_a? Nokogiri::XML::Element
-          @network = xml['network']
-          @satellite = xml['satellite']
+      def initialize(broadcast)
+        if broadcast
+          @network = broadcast['network']
+          @satellite = broadcast['satellite']
         end
       end
     end

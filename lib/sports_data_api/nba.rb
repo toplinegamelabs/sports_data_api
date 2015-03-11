@@ -27,64 +27,66 @@ module SportsDataApi
       season = season.to_s.upcase.to_sym
       raise SportsDataApi::Nba::Exception.new("#{season} is not a valid season") unless Season.valid?(season)
 
-      response = self.response_xml(version, "/games/#{year}/#{season}/schedule.xml")
+      response = self.response_json(version, "/games/#{year}/#{season}/schedule.json")
 
-      return Season.new(response.xpath("/league/season-schedule"))
+      return Season.new(response)
     end
 
     ##
     # Fetches NBA team roster
     def self.team_roster(team, version = DEFAULT_VERSION)
-      response = self.response_xml(version, "/teams/#{team}/profile.xml")
+      response = self.response_json(version, "/teams/#{team}/profile.json")
 
-      return Team.new(response.xpath("team"))
+      return Team.new(response)
     end
 
     ##
     # Fetches NBA game summary for a given game
     def self.game_summary(game, version = DEFAULT_VERSION)
-      response = self.response_xml(version, "/games/#{game}/summary.xml")
+      response = self.response_json(version, "/games/#{game}/summary.json")
 
-      return Game.new(xml: response.xpath("/game"))
+      return Game.new(game: response)
     end
 
     ##
     # Fetches all NBA teams
     def self.teams(version = DEFAULT_VERSION)
-      response = self.response_xml(version, "/league/hierarchy.xml")
+      response = self.response_json(version, "/league/hierarchy.json")
 
-      return Teams.new(response.xpath('/league'))
+      return Teams.new(response)
     end
 
     ##
     # Fetches NBA daily schedule for a given date
     def self.daily(year, month, day, version = DEFAULT_VERSION)
-      response = self.response_xml(version, "/games/#{year}/#{month}/#{day}/schedule.xml")
+      response = self.response_json(version, "/games/#{year}/#{month}/#{day}/schedule.json")
 
-      return Games.new(response.xpath('league/daily-schedule'))
+      return Games.new(response)
     end
 
     ##
     # Fetches NBA stats by quarter for a given game
     def self.quarter_stats(game, version = DEFAULT_VERSION)
-      response = self.response_xml(version, "/games/#{game}/pbp.xml")
+      response = self.response_json(version, "/games/#{game}/pbp.json")
 
-      return Game.new(xml: response.xpath("/game"))
+      return Game.new(game: response)
     end
 
     ##
     # Fetches NBA season stats for a given team
     def self.season_stats(year, season, team, version = DEFAULT_VERSION)
-      response = self.response_xml(version, "/seasontd/#{year}/#{season}/teams/#{team}/statistics.xml")
+      response = self.response_json(version, "/seasontd/#{year}/#{season}/teams/#{team}/statistics.json")
 
-      return PlayerSeasonStats.new(response.xpath("season"))
+      return PlayerSeasonStats.new(response)
     end
 
+
     private
-    def self.response_xml(version, url)
+
+    def self.response_json(version, url)
       base_url = BASE_URL % { access_level: SportsDataApi.access_level(SPORT), version: version }
       response = SportsDataApi.generic_request("#{base_url}#{url}", SPORT)
-      Nokogiri::XML(response.to_s).remove_namespaces!
+      JSON.parse(response.to_s)
     end
   end
 end

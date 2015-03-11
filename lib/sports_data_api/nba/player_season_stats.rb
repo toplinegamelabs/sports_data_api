@@ -3,13 +3,13 @@ module SportsDataApi
     class PlayerSeasonStats
       attr_reader :team_id, :year, :type, :players
 
-      def initialize(xml)
-        if xml.is_a? Nokogiri::XML::NodeSet
-          @year = xml.first["year"].to_i
-          @type = xml.first["type"].to_sym
-          @team_id = xml.first.xpath('team').first['id']
-          @players = xml.first.xpath('team/player_records/player').map do |player_xml|
-            Player.new(player_xml)
+      def initialize(stats)
+        if stats
+          @year = stats['season']['year'].to_i
+          @type = stats['season']['type'].to_sym
+          @team_id = stats['id']
+          @players = stats['players'].map do |player|
+            Player.new(player)
           end
         end
       end

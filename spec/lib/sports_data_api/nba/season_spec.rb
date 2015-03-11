@@ -36,6 +36,6 @@ describe SportsDataApi::Nba::Season, vcr: {
       it { should be_an_instance_of(SportsDataApi::Nba::Season) }
       its(:year) { should eq 2013 }
       its(:type) { should eq :REG }
-      its(:games) { should have(1230).games }
+      its(:games) { should have(1233).games }
   end
 end
