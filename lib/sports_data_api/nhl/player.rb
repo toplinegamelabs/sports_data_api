@@ -16,8 +16,9 @@ module SportsDataApi
             @stats.class.class_eval { attr_reader :"goaltending" }
             goalie_stats.each_pair do |parent_k, parent_v|
               if parent_v.is_a? Hash
+                parent_k = parent_k == 'total' ? '' : "#{parent_k}_"
                 parent_v.each_pair do |child_k, child_v|
-                  goaltending_ivar["#{parent_k}_#{child_k}".to_sym] = child_v
+                  goaltending_ivar["#{parent_k}#{child_k}".to_sym] = child_v
                 end
               else
                 goaltending_ivar[parent_k.to_sym] = parent_v
