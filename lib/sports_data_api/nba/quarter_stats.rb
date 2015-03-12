@@ -52,6 +52,7 @@ module SportsDataApi
             add_stat(stats['player']['id'], :three_points_made)
             add_stat(stats['player']['id'], :points, 3)
           else
+            add_stat(stats['player']['id'], :two_points_made)
             add_stat(stats['player']['id'], :points, 2)
           end
         end
